@@ -21,7 +21,8 @@
                 "data": {
                     "country_code": "Landcode van het land om camerabeelden weer te geven.",
                     "delta": "Tijdsinterval in seconden tussen updates van camerabeelden",
-                    "timeframe": "Minuten om vooruit te kijken voor neerslagvoorspelling"
+                    "timeframe": "Minuten om vooruit te kijken voor neerslagvoorspelling",
+                    "radar_timeframe": "Minuten om vooruit te kijken in radarbeelden"
                 }
             }
         }

@@ -21,7 +21,8 @@
                 "data": {
                     "country_code": "Country code of the country to display camera images.",
                     "delta": "Time interval in seconds between camera image updates",
-                    "timeframe": "Minutes to look ahead for precipitation forecast"
+                    "timeframe": "Minutes to look ahead for precipitation forecast",
+                    "radar_timeframe": "Minutes to look ahead for radar image forecast"
                 }
             }
         }

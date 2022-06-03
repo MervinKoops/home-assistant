@@ -19,9 +19,13 @@ from homeassistant.util import dt as dt_util
 from .const import (
     CONF_COUNTRY,
     CONF_DELTA,
+    CONF_TIMEFRAME,
+    CONF_RADAR_TIMEFRAME,
     DEFAULT_COUNTRY,
     DEFAULT_DELTA,
     DEFAULT_DIMENSION,
+    DEFAULT_TIMEFRAME,
+    DEFAULT_RADAR_TIMEFRAME,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,7 +51,11 @@ async def async_setup_entry(
     latitude = config.get(CONF_LATITUDE, hass.config.latitude)
     longitude = config.get(CONF_LONGITUDE, hass.config.longitude)
 
-    async_add_entities([BuienradarCam(latitude, longitude, delta, country)])
+    radarTimeframe = options.get(
+        CONF_TIMEFRAME, config.get(CONF_RADAR_TIMEFRAME, DEFAULT_RADAR_TIMEFRAME)
+    )
+
+    async_add_entities([BuienradarCam(latitude, longitude, delta, country, radarTimeframe)])
 
 
 class BuienradarCam(Camera):
@@ -60,7 +68,7 @@ class BuienradarCam(Camera):
     """
 
     def __init__(
-        self, latitude: float, longitude: float, delta: float, country: str
+        self, latitude: float, longitude: float, delta: float, country: str, radarTimeframe: int
     ) -> None:
         """
         Initialize the component.
@@ -79,6 +87,9 @@ class BuienradarCam(Camera):
 
         # country location
         self._country = country
+
+        # timeframe for radar image forecast, in minutes
+        self._radar_timeframe = radarTimeframe
 
         # Condition that guards the loading indicator.
         #
@@ -113,9 +124,14 @@ class BuienradarCam(Camera):
         """Retrieve new radar image and return whether this succeeded."""
         session = async_get_clientsession(self.hass)
 
+        # images are only available in 10 minute periods, starting at a minimum of 1 to represent the current time
+        radarTimeframePeriods = (self._radar_timeframe // 10) + 1
+        if radarTimeframePeriods % 10:
+            radarTimeframePeriods += 1
+
         url = (
-            f"https://api.buienradar.nl/image/1.0/RadarMap{self._country}"
-            f"?w={self._dimension}&h={self._dimension}"
+            f"https://image.buienradar.nl/2.0/image/animation/RadarMapRain{self._country}"
+            f"?width={self._dimension}&height={self._dimension}&renderBackground=True&renderBranding=False&renderText=True&History=0&forecast={radarTimeframePeriods}"
         )
 
         if self._last_modified:

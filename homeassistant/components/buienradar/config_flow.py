@@ -16,9 +16,11 @@ from .const import (
     CONF_COUNTRY,
     CONF_DELTA,
     CONF_TIMEFRAME,
+    CONF_RADAR_TIMEFRAME,
     DEFAULT_COUNTRY,
     DEFAULT_DELTA,
     DEFAULT_TIMEFRAME,
+    DEFAULT_RADAR_TIMEFRAME,
     DOMAIN,
     SUPPORTED_COUNTRY_CODES,
 )
@@ -109,6 +111,15 @@ class BuienradarOptionFlowHandler(config_entries.OptionsFlow):
                             ),
                         ),
                     ): vol.All(vol.Coerce(int), vol.Range(min=5, max=120)),
+                    vol.Optional(
+                        CONF_RADAR_TIMEFRAME,
+                        default=self.config_entry.options.get(
+                            CONF_RADAR_TIMEFRAME,
+                            self.config_entry.data.get(
+                                CONF_RADAR_TIMEFRAME, DEFAULT_RADAR_TIMEFRAME
+                            ),
+                        ),
+                    ): vol.All(vol.Coerce(int), vol.Range(min=10, max=360)),
                 }
             ),
         )
